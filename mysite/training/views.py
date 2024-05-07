@@ -1,29 +1,33 @@
 from django.http import HttpResponse
+from .models import Statistic
+from django.shortcuts import render
 
 
 def menu(request):
-    return HttpResponse("This is main menu")
+    return render(request, "training/menu.html")
 
 
 def settings(request):
-    return HttpResponse("This is settings")
+    return render(request, "training/settings.html")
 
 
-def statistics(request):
-    return HttpResponse("This is statistics")
+def statistic(request):
+    average_mark = Statistic.objects.get(pk=1).calc_average_grade()
+    context = {"average_mark": average_mark}
+    return render(request, "training/statistic.html", context)
 
 
 def training_session(request):
-    return HttpResponse("This is training_session. You can choose training mode")
+    return render(request, "training/training_session.html")
 
 
 def translate(request):
-    return HttpResponse("This is translate mode")
+    return render(request, "training/translate.html")
 
 
 def sound(request):
-    return HttpResponse("This is sound mode")
+    return render(request, "training/sound.html")
 
 
 def chatbot(request):
-    return HttpResponse("This is chatbot mode")
+    return render(request, "training/chatbot.html")

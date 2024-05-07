@@ -30,7 +30,7 @@ class Grades(models.Model):
     grade = models.PositiveSmallIntegerField("Оценка")
 
     def __str__(self):
-        return self.grade
+        return str(self.grade)
 
     class Meta:
         verbose_name = "Оценка"
@@ -40,13 +40,21 @@ class Grades(models.Model):
 class Statistic(models.Model):
     user = models.ForeignKey(User, verbose_name="Пользователь", on_delete=models.CASCADE)
     translation_grades = models.ManyToManyField(Grades, verbose_name="Оценки по переводу", related_name="translation_grades")
-    sound_grades = models.ManyToManyField(Grades, verbose_name="Оценки по звучанию", related_name="sound_translation")
+    sound_grades = models.ManyToManyField(Grades, verbose_name="Оценки по звучанию", related_name="sound_grades")
 
     def calc_average_grade(self):
-        return 4
+        grades = 0
+        for sound_grade in self.sound_grades.all():
+            grades += sound_grade.grade
+        for translation_grade in self.translation_grades.all():
+            grades += translation_grade.grade
+        return grades / (self.sound_grades.count() + self.translation_grades.count())
+
+
 
     def __str__(self):
-        return self.calc_average_grade()
+        return str(self.calc_average_grade())
+
 
     class Meta:
         verbose_name = "Статистика"
@@ -60,8 +68,8 @@ class Training_session(models.Model):
         return self.user + "`s training session"
 
     class Meta:
-        verbose_name = "Режим обучения"
-        verbose_name_plural = "Режимы обучения"
+        verbose_name = "Обучающая сессия"
+        verbose_name_plural = "Обучающие сессии"
 
 
 class Training_mode(models.Model):
