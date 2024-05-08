@@ -1,10 +1,8 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-class User(models.Model):
-    username = models.CharField("Логин", max_length=30)
-    email = models.CharField("Эл. почта", max_length=100)
-    password = models.CharField("Пароль", max_length=30)
+class Student(AbstractUser):
 
     def __str__(self):
         return self.username
@@ -15,7 +13,7 @@ class User(models.Model):
 
 
 class Settings(models.Model):
-    user = models.ForeignKey(User, verbose_name="Пользователь", on_delete=models.CASCADE)
+    user = models.ForeignKey(Student, verbose_name="Пользователь", on_delete=models.CASCADE)
     settings = models.TextField("Настройки")
 
     def __str__(self):
@@ -38,7 +36,7 @@ class Grades(models.Model):
 
 
 class Statistic(models.Model):
-    user = models.ForeignKey(User, verbose_name="Пользователь", on_delete=models.CASCADE)
+    user = models.ForeignKey(Student, verbose_name="Пользователь", on_delete=models.CASCADE)
     translation_grades = models.ManyToManyField(Grades, verbose_name="Оценки по переводу", related_name="translation_grades")
     sound_grades = models.ManyToManyField(Grades, verbose_name="Оценки по звучанию", related_name="sound_grades")
 
@@ -62,7 +60,7 @@ class Statistic(models.Model):
 
 
 class Training_session(models.Model):
-    user = models.ForeignKey(User, verbose_name="Пользователь", on_delete=models.CASCADE)
+    user = models.ForeignKey(Student, verbose_name="Пользователь", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.user + "`s training session"

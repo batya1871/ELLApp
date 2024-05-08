@@ -1,14 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Training session</title>
-</head>
-<body>
-<p><strong>Выберите режим обучения</strong></p>
-<li><a href="{% url 'training:translate'  %}">Режим "перевод"</a></li>
-<li><a href="{% url 'training:sound'  %}">Режим "звучание"</a></li>
-<li><a href="{% url 'training:chatbot'  %}">Режим "чатбот"</a></li>
-<li><a href="{% url 'training:menu'  %}">Вернуться в меню</a></li>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{title}}</h1>
+<ul>
+    {% for option in session_list %}
+    <li><a href="{% url option.ref  %}">{{option.content}}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}

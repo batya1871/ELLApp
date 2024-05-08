@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Sound</title>
-</head>
-<body>
-<p><strong>Это режим "звучание"</strong></p>
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{title}}</h1>
 <li><a href="{% url 'training:training_session'  %}">Вернуться к выбору режима</a></li>
-<li><a href="{% url 'training:menu'  %}">Вернуться в меню</a></li>
-</body>
-</html>
+{% endblock %}
+

@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Settings</title>
-</head>
-<body>
-<li>Здесь будут настройки пользователя<li>
-<li><a href="{% url 'training:menu'  %}">Вернуться в меню</a></li>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{title}}</h1>
+{% endblock %}
