@@ -8,11 +8,12 @@
     <link type="text/css" href="{% static 'training/css/styles.css'%}" rel="stylesheet"/>
 </head>
 <body>
+{% if user.is_authenticated %}
 <ul>
-    {% for m in common_menu %}
-    {% if not forloop.last %}<li> {% else %} <li class="last"> {% endif %} <a href="{% url m.url_name  %}">{{m.title}}</a></li>
-    {% endfor %}
+    {% if not title == 'Меню' %}<li><a href="{% url 'training:menu'  %}">Меню</a></li> {% endif %}
+    <li class="last">{{user.username}} | <a href="{% url 'users:logout'  %}">Выйти</a></li>
 </ul>
+{% endif %}
 {% block content %} {% endblock %}
 </body>
 </html>

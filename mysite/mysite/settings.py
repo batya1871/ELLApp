@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['XXX.iptime.org', 'localhost', '127.0.0.1', 'testserver']
 
 INSTALLED_APPS = [
     "training.apps.TrainingConfig",
+    'users.apps.UsersConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -104,7 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'Europe/Moscow'
 
@@ -124,3 +125,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Назначаем своего пользователя
 AUTH_USER_MODEL = 'training.Student'
+
+#Назначаем базовый шаблон для входа
+LOGIN_REDIRECT_URL = 'training:menu'
+
+#Куда переходить если не авторизован
+LOGIN_URL = 'users:login'
+
+#Настраиваем SMTP (отправку сообщений через яндекс)
+
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+
+EMAIL_HOST_USER = "batya0202@yandex.ru"
+EMAIL_HOST_PASSWORD = 'eztvqxxcupgtgpjc'
+DEFAULT_FROM_EMAIL = "batya0202@yandex.ru"
+SERVER_EMAIL = EMAIL_HOST_USER
+EMAIL_ADMIN = EMAIL_HOST_USER
+
+

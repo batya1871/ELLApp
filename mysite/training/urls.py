@@ -10,5 +10,4 @@ urlpatterns = [
     path("training_session/translate", views.translate, name="translate"),
     path("training_session/sound", views.sound, name="sound"),
     path("training_session/chatbot", views.chatbot, name="chatbot"),
-    path("login/", views.login, name="login"),
 ]
