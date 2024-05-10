@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+<div>
+    <h1>{{title}}</h1>
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col" >Показатели</th>
+                    <th scope="col" >Результаты</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Всего вопросов в тесте</td>
+                    <td>{{ number }}</td>
+                </tr>
+                <tr>
+                    <td>Правильные ответы</td>
+                    <td>{{ correct }}</td>
+                </tr>
+                <tr>
+                    <td>Неправильные ответы</td>
+                    <td>{{ wrong }}</td>
+                </tr>
+                <tr>
+                    <td>Пропущено вопросов</td>
+                    <td>{{ skipped }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        {% for wrong in wrong_data %}
+            <div>
+                <p>Задание:Перевести текст "{{wrong.wrong_exercises.task}}"</p>
+                <p>Ответ пользователя: {{wrong.wrong_answers}}</p>
+                <p>Правильный ответ: {{wrong.correct_answers}}</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
