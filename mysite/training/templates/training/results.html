@@ -33,7 +33,14 @@
     <div>
         {% for wrong in wrong_data %}
             <div>
-                <p>Задание:Перевести текст "{{wrong.wrong_exercises.task}}"</p>
+
+                <p>Задание:</p>
+                {%if training_mode == "translate"%}
+                <p>Перевести текст: "{{wrong.wrong_exercises.task}}"</p>
+                {% else %}
+                <p>Прослушать аудио и написать услышанное</p>
+                <audio controls src="{{ wrong.wrong_exercises.audio_task.url }}"></audio>
+                {% endif %}
                 <p>Ответ пользователя: {{wrong.wrong_answers}}</p>
                 <p>Правильный ответ: {{wrong.correct_answers}}</p>
             </div>

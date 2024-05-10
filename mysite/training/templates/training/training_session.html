@@ -3,17 +3,29 @@
 <h1>{{title}}</h1>
 <form method="post">
     {% csrf_token %}
-    <input  type="hidden" name="TypeOfTraining" value="Translate">
+    <input  type="hidden" name="TypeOfTraining" value="translate">
     <h2>Режим "Перевод"</h2>
-    <p><label for="dif_sel_id">Уровень сложности:</label>
-        <select id="dif_sel_id" name="diff_option" size="1">
+    <p><label for="dif_sel_id_translate">Уровень сложности:</label>
+        <select id="dif_sel_id_translate" name="diff_option_translate" size="1">
             <option value="1">Легкий</option>
             <option value="2">Средний</option>
             <option value="3">Сложный</option>
         </select>
     </p>
     <p><button type="submit">Перейти к тесту</button> </p>
-
+</form>
+<form method="post">
+    {% csrf_token %}
+    <input  type="hidden" name="TypeOfTraining" value="sound">
+    <h2>Режим "Звучание"</h2>
+    <p><label for="dif_sel_id_sound">Уровень сложности:</label>
+        <select id="dif_sel_id_sound" name="diff_option_sound" size="1">
+            <option value="4">Легкий</option>
+            <option value="5">Средний</option>
+            <option value="6">Сложный</option>
+        </select>
+    </p>
+    <p><button type="submit">Перейти к тесту</button> </p>
 </form>
 <ul>
     {% for option in session_list %}

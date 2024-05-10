@@ -24,7 +24,9 @@ class Student(AbstractUser):
 
     def get_answer_if_choice_wrong(self, exercise):
         choice = self.choice_set.filter(exercise=exercise)
-        if choice.first().user_answer.lower() not in exercise.get_correct_answers().values_list('answer', flat=True):
+        correct_answers = exercise.get_correct_answers().values_list('answer', flat=True)
+        correct_answers = [answer.lower() for answer in correct_answers]
+        if choice.first().user_answer.lower() not in correct_answers:
             return choice.first().user_answer
         return None
 
@@ -119,9 +121,11 @@ class Exercise_block(models.Model):
 
 
 class Exercise(models.Model):
-    task = models.TextField("Задание")
+    task = models.TextField("Задание", blank=True, default="Task in audio file")
     num = models.IntegerField("Номер в списке", default=0)
     exercise_block = models.ForeignKey(Exercise_block, verbose_name="Тест", on_delete=models.CASCADE)
+    audio_task = models.FileField(upload_to="sound", default=None,
+                                  null=True, verbose_name="Аудио-задание")
 
     def __str__(self):
         return "№" + str(self.num) + " Задание: " + str(self.task)
@@ -133,15 +137,19 @@ class Exercise(models.Model):
     def get_correct_answers(self):
         return self.correct_answers_set.all()
 
+
 class Correct_Answers(models.Model):
     exercise = models.ForeignKey(Exercise, verbose_name="Задание", on_delete=models.CASCADE)
     answer = models.TextField("Правильный ответ")
+
     def __str__(self):
         return self.answer
 
     class Meta:
         verbose_name = "Ответ"
         verbose_name_plural = "Ответы"
+
+
 class Choice(models.Model):
     user = models.ForeignKey(Student, verbose_name="Пользователь", on_delete=models.CASCADE)
     exercise = models.ForeignKey(Exercise, verbose_name="Задание", on_delete=models.CASCADE)
