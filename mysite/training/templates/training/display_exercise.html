@@ -1,44 +1,49 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>{{title}}</h1>
-<form id="exercise-form"
-        action="{% url 'training:exercise_grade' training_mode difficulty_level exercise.num %}"
-        method="post">
-      {% csrf_token %}
-          <div><label for="task_field">{%if training_mode == "translate"%}Выполните перевод на текста на Английский язык:
-              {%else%}
-              Прослушайте сообщение и напишите услышанное:{%endif%} </label>
-              {%if training_mode == "translate"%}
-              <p id="task_field">{{ exercise.task }}</p>
-              {%else%}
-              <audio controls src="{{ exercise.audio_task.url }}"></audio>
-              {%endif%}
+<div class="exercise-container">
+    <div class="exercise-css">
+    <h1>{{title}}</h1>
+    <form id="exercise-form"
+            action="{% url 'training:exercise_grade' training_mode difficulty_level exercise.num %}"
+            method="post">
+          {% csrf_token %}
+              <div class="task-css">
+                  <label class="text-task-base" for="task_field">{%if training_mode == "translate"%}Выполните перевод текста на Английский язык:
+                  {%else%}
+                  Прослушайте сообщение и напишите услышанное:{%endif%} </label>
+                  {%if training_mode == "translate"%}
+                  <div class="text-task-css" id="task_field">{{ exercise.task }}</div>
+                  {%else%}
+                  <audio class="audio-task-css" id="task_field" controls src="{{ exercise.audio_task.url }}"></audio>
+                  {%endif%}
+              </div>
+              <div class="answer-field-cont">
+                  <textarea class="form-control textarea-max-height" name="answer" id="answer_field" rows="7"{% if users_answer != None %} readonly {%endif %} placeholder="Поле для ответа">
+                      {% if users_answer != None %} {{users_answer}} {%endif %}
+                  </textarea>
+              </div>
+          <div class="text-center">
+              <input type="submit" class="btn-exercise{% if users_answer != None %} btn-disabled"  disabled {% else %} " {%endif %}
+                     value="Ответить"/>
           </div>
+      </form>
+    <div class="exercise-refs">
+      {% if next_exercise %}
           <div>
-              <label for="answer_field">Поле для ответа: </label>
-              <textarea name="answer" id="answer_field" {% if users_answer != None %} readonly {%endif %}>
-                  {% if users_answer != None %} {{users_answer}} {%endif %}
-              </textarea>
+              <a class="ref-btn-ex ref-animatic-btn-nav" href="{% url 'training:display_exercise' training_mode difficulty_level next_exercise.num %}">Следующее задание</a>
           </div>
-      <div class="text-center">
-          <input type="submit" {% if users_answer != None %} disabled {%endif %}
-                 value="Ответить"/>
-      </div>
-  </form>
-<div>
-  {% if next_exercise %}
-      <div>
-          <a href="{% url 'training:display_exercise' training_mode difficulty_level next_exercise.num %}">Следующее задание</a>
-      </div>
-    {%else %}
-    <div>
-          <a href="{% url 'training:exercise_grade' training_mode difficulty_level exercise.num %}">К результатам</a>
-      </div>
-  {% endif %}
-  {% if prev_exercise %}
-      <div>
-          <a href="{% url 'training:display_exercise' training_mode difficulty_level prev_exercise.num %}">Прошлое задание</a>
-      </div>
-  {% endif %}
+        {%else %}
+        <div>
+              <a class="ref-btn-ex ref-animatic-btn-res" href="{% url 'training:exercise_grade' training_mode difficulty_level exercise.num %}">К результатам</a>
+          </div>
+      {% endif %}
+      {% if prev_exercise %}
+          <div>
+              <a class="ref-btn-ex ref-animatic-btn-nav" href="{% url 'training:display_exercise' training_mode difficulty_level prev_exercise.num %}">Прошлое задание</a>
+          </div>
+      {% endif %}
+    </div>
 </div>
+</div>
+
 {% endblock %}

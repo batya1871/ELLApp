@@ -10,12 +10,9 @@ from .models import Statistic, Difficulty_level, Choice, Result, Training_mode
 from django.shortcuts import render, redirect, get_object_or_404
 
 menu_list = [
-    {'ref': 'training:training_session', 'content': 'Перейти к выбору режима'},
-    {'ref': 'training:settings', 'content': 'Перейти к настройкам'},
-    {'ref': 'training:statistic', 'content': 'Перейти к статистике'}
-]
-session_list = [
-    {'ref': 'training:chatbot', 'content': 'Режим "чатбот"'}
+    {'ref': 'training:training_session', 'content': 'Выбор режима'},
+    {'ref': 'training:statistic', 'content': 'Статистика пользователя'},
+    {'ref': 'training:settings', 'content': 'Настройки'}
 ]
 
 value_diff_list = {
@@ -28,28 +25,43 @@ value_diff_list = {
 }
 
 
-@login_required
-def menu(request):
-    data = {
-        'title': "Меню",
-        'menu_list': menu_list,
+def get_grade(count, correct_count, difficulty_level):
+    percentage = correct_count / count * 100
+
+    grade_thresholds = {
+        "easy": [(90, 5, "greate-grade"), (70, 4, "good-grade"), (50, 3, "ok-grade")],
+        "medium": [(80, 5, "greate-grade"), (60, 4, "good-grade"), (40, 3, "ok-grade")],
+        "hard": [(70, 5, "greate-grade"), (50, 4, "good-grade"), (30, 3, "ok-grade")]
     }
-    return render(request, "training/menu.html", context=data)
 
+    for threshold, grade, grade_style in grade_thresholds[difficulty_level.split("-")[0]]:
+        if percentage >= threshold:
+            return grade, grade_style
 
-@login_required
-def settings(request):
-    data = {
-        'title': "Настройки",
-    }
-    return render(request, "training/settings.html", context=data)
-
+    return 2, "bad-grade"
 
 @login_required
 def statistic(request):
-    average_mark = Statistic.objects.get(pk=1).calc_average_grade()
+    statistic_of_user = request.user.statistic
+    statistic_exist = statistic_of_user is not None
+    average_translate, average_sound, common_average, translate_count, sound_count, common_count = None, None, None, None, None, None
+    if statistic_exist:
+        average_translate = round(statistic_of_user.calc_average_grade_by_translate(), 2)
+        average_sound = round(statistic_of_user.calc_average_grade_by_sound(), 2)
+        common_average = round(statistic_of_user.calc_average_grade(), 2)
+        translate_count = statistic_of_user.translate_grades.count()
+        sound_count = statistic_of_user.sound_grades.count()
+        common_count = sound_count + translate_count
     data = {'title': 'Статистика пользователя',
-            "average_mark": average_mark, }
+            'statistic_exist': statistic_exist,
+            'average_translate': average_translate,
+            'average_sound': average_sound,
+            'common_average': common_average,
+            'translate_count': translate_count,
+            'sound_count': sound_count,
+            'common_count': common_count,
+            'menu_list': menu_list,
+            }
     return render(request, "training/statistic.html", context=data)
 
 
@@ -64,7 +76,7 @@ def training_session(request):
                                                  'difficulty_level': difficulty_level}))
     data = {
         'title': "Выбор режима",
-        'session_list': session_list,
+        'menu_list': menu_list,
     }
     return render(request, "training/training_session.html", context=data)
 
@@ -75,6 +87,8 @@ def display_test(request, training_mode, difficulty_level):
     difficulty_level_bd = get_object_or_404(Difficulty_level, name=difficulty_level)
     exercise_block = difficulty_level_bd.exercise_block_set.first()
     exercise_block.set_nums()
+    if request.user.statistic is None:
+        request.user.create_statistic()
     return redirect(reverse_lazy('training:display_exercise',
                                  kwargs={'training_mode': training_mode,
                                          'difficulty_level': difficulty_level,
@@ -83,19 +97,15 @@ def display_test(request, training_mode, difficulty_level):
 
 @login_required
 def display_exercise(request, training_mode, difficulty_level, exercise_num):
-    print("Номер по приходу = " + str(exercise_num))
     difficulty_level_bd = get_object_or_404(Difficulty_level, name=difficulty_level)
     exercise_block = difficulty_level_bd.exercise_block_set.first()
     exercises = exercise_block.exercise_set.order_by('num')
-    print("Коллекция в работе:")
-    print(exercises)
     current_exercise, next_exercise, prev_exercise = None, None, None
     current_exercise = exercises[exercise_num]
     if exercise_num != len(exercises) - 1:
         next_exercise = exercises[exercise_num + 1]
     if exercise_num != 0:
         prev_exercise = exercises[exercise_num - 1]
-
 
     users_answer = request.user.is_answered_check(current_exercise)
 
@@ -105,7 +115,9 @@ def display_exercise(request, training_mode, difficulty_level, exercise_num):
                'next_exercise': next_exercise,
                'prev_exercise': prev_exercise,
                'users_answer': users_answer,
-               'title': "Вопрос №" + str(exercise_num + 1)}
+               'title': "Вопрос №" + str(exercise_num + 1),
+               'menu_list': menu_list,
+               }
     return render(request,
                   'training/display_exercise.html', context)
 
@@ -147,7 +159,8 @@ def exercise_grade(request, training_mode, difficulty_level, exercise_num):
                    'difficulty_level': difficulty_level,
                    'first_exercise_num': 0,
                    'skipped_exercises_count': skipped_exercises_count,
-                   'title': "Переход к результатам"}
+                   'title': "Переход к результатам",
+                   'menu_list': menu_list}
         return render(request,
                       'training/before_result.html', context)
 
@@ -160,9 +173,15 @@ def results(request, training_mode, difficulty_level):
     results_of_test = Result.objects.filter(user=request.user,
                                             training_mode=(
                                                 get_object_or_404(Training_mode, name=training_mode))).values()
-    correct = [i['correct'] for i in results_of_test][0] if len([i['correct'] for i in results_of_test]) > 0 else 0
-    wrong = [i['wrong'] for i in results_of_test][0] if len([i['wrong'] for i in results_of_test]) > 0 else 0
-    skipped = len(exercises) - (correct + wrong) if len(exercises) - (correct + wrong) > 0 else 0
+    correct, wrong = 0, 0
+    if results_of_test is not None and len(results_of_test) > 0:
+        correct = results_of_test[0]['correct'] if results_of_test[0]['correct'] > 0 else 0
+        wrong = results_of_test[0]['wrong'] if results_of_test[0]['wrong'] > 0 else 0
+    skipped = len(exercises) - (correct + wrong)
+    grade, grade_style = get_grade(len(exercises), correct, difficulty_level)
+    stat = request.user.statistic
+    stat.add_grade(grade, training_mode)
+    result_data = {'correct': correct, 'wrong': wrong, 'skipped': skipped, 'number': len(exercises), 'grade': grade}
     for exercise in exercises:
         if request.user.is_answered_check(exercise) is None:
             choice = Choice(user=request.user,
@@ -176,30 +195,13 @@ def results(request, training_mode, difficulty_level):
             correct_answers.append(exercise.get_correct_answers().first())
     wrong_data = [{'wrong_answers': t[0], 'wrong_exercises': t[1], 'correct_answers': t[2]} for t in zip(wrong_answers,
                                                                                                          wrong_exercises,
-                                                                                        correct_answers)]
+                                                                                                         correct_answers)]
     context = {'training_mode': training_mode,
                'difficulty_level': difficulty_level,
-               'correct': correct,
-               'wrong': wrong,
-               'number': len(exercises),
-               'skipped': skipped,
                'title': "Результаты",
-               'wrong_data': wrong_data}
+               'result_data': result_data,
+               'wrong_data': wrong_data,
+               'menu_list': menu_list,
+               'grade_style': grade_style}
     return render(request,
                   'training/results.html', context)
-
-
-@login_required
-def sound(request):
-    data = {
-        'title': 'Режим "Звучание"',
-    }
-    return render(request, "training/sound.html", context=data)
-
-
-@login_required
-def chatbot(request):
-    data = {
-        'title': 'Режим "Чатбот"',
-    }
-    return render(request, "training/chatbot.html", context=data)

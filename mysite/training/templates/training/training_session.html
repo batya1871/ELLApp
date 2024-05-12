@@ -1,35 +1,39 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>{{title}}</h1>
-<form method="post">
-    {% csrf_token %}
-    <input  type="hidden" name="TypeOfTraining" value="translate">
-    <h2>Режим "Перевод"</h2>
-    <p><label for="dif_sel_id_translate">Уровень сложности:</label>
-        <select id="dif_sel_id_translate" name="diff_option_translate" size="1">
-            <option value="1">Легкий</option>
-            <option value="2">Средний</option>
-            <option value="3">Сложный</option>
-        </select>
-    </p>
-    <p><button type="submit">Перейти к тесту</button> </p>
-</form>
-<form method="post">
-    {% csrf_token %}
-    <input  type="hidden" name="TypeOfTraining" value="sound">
-    <h2>Режим "Звучание"</h2>
-    <p><label for="dif_sel_id_sound">Уровень сложности:</label>
-        <select id="dif_sel_id_sound" name="diff_option_sound" size="1">
-            <option value="4">Легкий</option>
-            <option value="5">Средний</option>
-            <option value="6">Сложный</option>
-        </select>
-    </p>
-    <p><button type="submit">Перейти к тесту</button> </p>
-</form>
-<ul>
-    {% for option in session_list %}
-    <li><a href="{% url option.ref  %}">{{option.content}}</a></li>
-    {% endfor %}
-</ul>
+
+
+
+<div class="form-container">
+    <div class="training-mode-div">
+        <form method="post" class="training-mode-form">
+        {% csrf_token %}
+        <input  type="hidden" name="TypeOfTraining" value="translate">
+        <div class="form-training-mode-header"><h2>Режим "Перевод"</h2></div>
+        <div class="form-training-mode-body"><label class="form-label" for="dif_sel_id_translate">Уровень сложности:</label>
+            <select id="dif_sel_id_translate" class="form-select" name="diff_option_translate" size="1">
+                <option value="1">Легкий</option>
+                <option value="2">Средний</option>
+                <option value="3">Сложный</option>
+            </select>
+        </div>
+        <p><button type="submit" class="btn-training-mode">Перейти к тесту</button> </p>
+    </form>
+    </div>
+    <div class="training-mode-div">
+        <form method="post" class="training-mode-form">
+                    {% csrf_token %}
+                    <input  type="hidden" name="TypeOfTraining" value="sound">
+                    <div class="form-training-mode-header"><h2>Режим "Звучание"</h2></div>
+                    <div class="form-training-mode-body"><label class="form-label" for="dif_sel_id_sound">Уровень сложности:</label>
+                        <select class="form-select" id="dif_sel_id_sound" name="diff_option_sound" size="1">
+                            <option value="4">Легкий</option>
+                            <option value="5">Средний</option>
+                            <option value="6">Сложный</option>
+                        </select>
+                    </div>
+                    <p><button type="submit" class=" btn-training-mode">Перейти к тесту</button> </p>
+                </form>
+    </div>
+
+</div>
 {% endblock %}

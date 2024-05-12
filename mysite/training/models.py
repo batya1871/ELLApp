@@ -3,6 +3,7 @@ from django.db import models
 
 
 class Student(AbstractUser):
+    statistic = models.OneToOneField('Statistic', on_delete=models.SET_NULL, null=True, blank=True, related_name="user")
 
     def __str__(self):
         return self.username
@@ -30,6 +31,12 @@ class Student(AbstractUser):
             return choice.first().user_answer
         return None
 
+    def create_statistic(self):
+        statistic = Statistic.objects.create()
+        statistic.save()
+        self.statistic = statistic
+        self.save()
+
 
 class Settings(models.Model):
     user = models.ForeignKey(Student, verbose_name="Пользователь", on_delete=models.CASCADE)
@@ -55,18 +62,38 @@ class Grades(models.Model):
 
 
 class Statistic(models.Model):
-    user = models.ForeignKey(Student, verbose_name="Пользователь", on_delete=models.CASCADE)
-    translation_grades = models.ManyToManyField(Grades, verbose_name="Оценки по переводу",
-                                                related_name="translation_grades")
+    translate_grades = models.ManyToManyField(Grades, verbose_name="Оценки по переводу",
+                                              related_name="translation_grades")
     sound_grades = models.ManyToManyField(Grades, verbose_name="Оценки по звучанию", related_name="sound_grades")
 
     def calc_average_grade(self):
         grades = 0
         for sound_grade in self.sound_grades.all():
             grades += sound_grade.grade
-        for translation_grade in self.translation_grades.all():
-            grades += translation_grade.grade
-        return grades / (self.sound_grades.count() + self.translation_grades.count())
+        for translate_grade in self.translate_grades.all():
+            grades += translate_grade.grade
+        common_count = (self.sound_grades.count() + self.translate_grades.count())
+        return grades / common_count if common_count > 0 else 0
+
+    def calc_average_grade_by_sound(self):
+        grades = 0
+        for sound_grade in self.sound_grades.all():
+            grades += sound_grade.grade
+        return grades / self.sound_grades.count() if self.sound_grades.count() > 0 else 0
+
+    def calc_average_grade_by_translate(self):
+        grades = 0
+        for translate_grades in self.translate_grades.all():
+            grades += translate_grades.grade
+        return grades / self.translate_grades.count() if self.translate_grades.count() > 0 else 0
+
+    def add_grade(self, grade, training_mode):
+        match training_mode:
+            case "translate":
+                self.translate_grades.create(grade=grade)
+            case "sound":
+                self.sound_grades.create(grade=grade)
+        self.save()
 
     def __str__(self):
         return str(self.calc_average_grade())
@@ -77,7 +104,7 @@ class Statistic(models.Model):
 
 
 class Training_mode(models.Model):
-    name = models.CharField("Название", max_length=10)
+    name = models.CharField("Название", max_length=10, unique=True)
 
     def __str__(self):
         return self.name
@@ -88,7 +115,7 @@ class Training_mode(models.Model):
 
 
 class Difficulty_level(models.Model):
-    name = models.CharField("Сложность", max_length=20)
+    name = models.CharField("Сложность", max_length=20, unique=True)
     training_mode = models.ForeignKey(Training_mode, verbose_name="Режим обучения", on_delete=models.CASCADE)
 
     def __str__(self):
@@ -103,7 +130,7 @@ class Difficulty_level(models.Model):
 
 
 class Exercise_block(models.Model):
-    name = models.TextField("Название теста")
+    name = models.TextField("Название теста", unique=True)
     difficulty_level = models.ForeignKey(Difficulty_level, verbose_name="Уровень сложности", on_delete=models.CASCADE)
 
     def set_nums(self):
@@ -121,7 +148,7 @@ class Exercise_block(models.Model):
 
 
 class Exercise(models.Model):
-    task = models.TextField("Задание", blank=True, default="Task in audio file")
+    task = models.TextField("Задание", blank=True)
     num = models.IntegerField("Номер в списке", default=0)
     exercise_block = models.ForeignKey(Exercise_block, verbose_name="Тест", on_delete=models.CASCADE)
     audio_task = models.FileField(upload_to="sound", default=None,
@@ -161,3 +188,5 @@ class Result(models.Model):
     user = models.ForeignKey(Student, verbose_name="Пользователь", on_delete=models.CASCADE)
     correct = models.IntegerField("Кол-во правильных ответов", default=0)
     wrong = models.IntegerField("Кол-во неправильных ответов", default=0)
+
+

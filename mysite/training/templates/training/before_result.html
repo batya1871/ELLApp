@@ -1,15 +1,20 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>{{title}}</h1>
-<div>
-    <div>
-        <p>Пропущенных заданий: {{skipped_exercises_count}} </p>
+
+<div class="exercise-container">
+    <div class="exercise-css">
+        <h1>{{title}}</h1>
+        <div>
+            <p>Пропущенных заданий: <strong>{{skipped_exercises_count}}</strong></p>
+        </div>
+          <div class="refs-before-results">
+              <div>
+              <a class="ref-btn-ex ref-animatic-btn-nav ref-before-results" href="{% url 'training:display_exercise' training_mode difficulty_level first_exercise_num %}">Вернуться к тесту</a>
+          </div>
+          <div>
+              <a class="ref-btn-ex ref-animatic-btn-res ref-before-results" href="{% url 'training:results' training_mode difficulty_level  %}">Перейти к результатам</a>
+          </div>
+          </div>
     </div>
-      <div>
-          <a href="{% url 'training:display_exercise' training_mode difficulty_level first_exercise_num %}">Вернуться к тесту</a>
-      </div>
-      <div>
-          <a href="{% url 'training:results' training_mode difficulty_level  %}">Перейти к результатам</a>
-      </div>
 </div>
 {% endblock %}

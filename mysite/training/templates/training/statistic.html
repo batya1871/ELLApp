@@ -1,10 +1,37 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>{{title}}</h1>
-{% if average_mark %}
-    <p>Средний балл = {{average_mark}}<p>
-
+{% if statistic_exist %}
+    <div class="statistic-div">
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td >Кол-во пройденных тестов в режиме "Перевод"</td>
+                    <td>{{ translate_count }}</td>
+                </tr>
+                <tr>
+                    <td>Средний балл в режиме "Перевод"</td>
+                    <td>{{ average_translate }}</td>
+                </tr>
+                <tr>
+                    <td>Кол-во пройденных тестов в режиме "Звучание"</td>
+                    <td>{{ sound_count }}</td>
+                </tr>
+                <tr>
+                    <td>Средний балл в режиме "Звучание"</td>
+                    <td>{{ average_sound }}</td>
+                </tr>
+                <tr>
+                    <td>Всего тестов пройдено</td>
+                    <td>{{ common_count }}</td>
+                </tr>
+                <tr>
+                    <td>Общий средний балл</td>
+                    <td>{{ common_average }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     {% else %}
-        <p>Пользователь еще не приступал к обучению</p>
+        <p>Вы еще не приступали к обучению</p>
     {% endif %}
 {% endblock %}

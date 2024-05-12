@@ -1,9 +1,0 @@
-{% extends 'base.html' %}
-{% block content %}
-<h1>{{title}}</h1>
-<ul>
-    {% for option in menu_list %}
-    <li><a href="{% url option.ref  %}">{{option.content}}</a></li>
-    {% endfor%}
-</ul>
-{% endblock %}
