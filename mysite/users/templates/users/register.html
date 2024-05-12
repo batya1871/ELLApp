@@ -1,16 +1,52 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{title}}</h1>
-<form method="post">
-  {% csrf_token %}
-  <input type="hidden" name="next" value="{{ next }}"/>
-  <div class="form-error">{{ form.non_field_errors}}</div>
-   {% for f in form %}
-   <p><label class="form-label" for="{{f.id_for_label}}">{{f.label}}</label> {{f}}</p>
-   <div class="form-error">{{f.errors}}</div>
-   {% endfor %}
-  <p><button type="submit">Регистрация</button> </p>
-</form>
+
+<div class="form-users-container">
+   <div class="form-users-css reg-form-size">
+      <h1 class="form-users-title">{{title}}</h1>
+      <form method="post" class="needs-validation form-users-inputs" novalidate>
+         {% csrf_token %}
+         <input type="hidden" name="next" value="{{ next }}"/>
+         {% for f in form %}
+         {% if f.label != "Пароль" and f.label != "Повтор пароля" %}
+         <div class="form-obj-set">
+             {% if f.label != "Эл. почта" %}
+            <div class="form-obj-field">{{f}}</div>
+             {% else %}
+             <div class="input-group has-validation">
+                <span class="input-group-text" id="validationTooltipUsernamePrepend">@</span>
+                {{f}}
+             </div>
+             {% endif %}
+           <div class="form-error">
+               {{f.errors}}
+           </div>
+         </div>
+          {% endif %}
+         {% endfor %}
+          <div class="password-set">
+              <div class="passwords">
+              {% for f in form %}
+                {% if f.label == "Пароль" or f.label == "Повтор пароля" %}
+                 <div>
+                    <div class="form-obj-field">{{f}}</div>
+                 </div>
+                {% endif %}
+                {% if forloop.last %}
+              </div>
+                  <div class="form-error">
+                    {{f.errors}}
+                  </div>
+                {% endif %}
+              {% endfor %}
+
+          </div>
+
+         <div class="form-error">{{ form.non_field_errors}}</div>
+         <p><button class="btn-default btn-users" type="submit">Регистрация</button></p>
+      </form>
+   </div>
+</div>
 
 {% endblock %}

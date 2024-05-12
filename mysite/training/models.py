@@ -188,5 +188,10 @@ class Result(models.Model):
     user = models.ForeignKey(Student, verbose_name="Пользователь", on_delete=models.CASCADE)
     correct = models.IntegerField("Кол-во правильных ответов", default=0)
     wrong = models.IntegerField("Кол-во неправильных ответов", default=0)
+    processed = models.BooleanField("Это поле обработано", default=False)
+
+    def end_of_processing(self):
+        self.processed = True
+        self.save()
 
 

@@ -40,6 +40,7 @@ def get_grade(count, correct_count, difficulty_level):
 
     return 2, "bad-grade"
 
+
 @login_required
 def statistic(request):
     statistic_of_user = request.user.statistic
@@ -89,6 +90,10 @@ def display_test(request, training_mode, difficulty_level):
     exercise_block.set_nums()
     if request.user.statistic is None:
         request.user.create_statistic()
+    results_new = Result.objects.create(user=request.user,
+                                        training_mode=(
+                                            get_object_or_404(Training_mode, name=training_mode)))
+    results_new.save()
     return redirect(reverse_lazy('training:display_exercise',
                                  kwargs={'training_mode': training_mode,
                                          'difficulty_level': difficulty_level,
@@ -138,9 +143,9 @@ def exercise_grade(request, training_mode, difficulty_level, exercise_num):
         correct_answers = [answer.lower() for answer in correct_answers]
 
         is_correct = user_answer.lower() in correct_answers
-        result, created = Result.objects.get_or_create(user=request.user,
-                                                       training_mode=(
-                                                           get_object_or_404(Training_mode, name=training_mode)))
+        result = Result.objects.get(user=request.user,
+                                    training_mode=(
+                                        get_object_or_404(Training_mode, name=training_mode)))
         if is_correct is True:
             result.correct = F('correct') + 1
         else:
@@ -172,15 +177,17 @@ def results(request, training_mode, difficulty_level):
     exercises = exercise_block.exercise_set.order_by('num')
     results_of_test = Result.objects.filter(user=request.user,
                                             training_mode=(
-                                                get_object_or_404(Training_mode, name=training_mode))).values()
-    correct, wrong = 0, 0
-    if results_of_test is not None and len(results_of_test) > 0:
-        correct = results_of_test[0]['correct'] if results_of_test[0]['correct'] > 0 else 0
-        wrong = results_of_test[0]['wrong'] if results_of_test[0]['wrong'] > 0 else 0
+                                                get_object_or_404(Training_mode, name=training_mode)))[0]
+
+    correct, wrong, skipped = 0, 0, 10
+    correct = results_of_test.correct if results_of_test.correct > 0 else 0
+    wrong = results_of_test.wrong if results_of_test.wrong > 0 else 0
     skipped = len(exercises) - (correct + wrong)
     grade, grade_style = get_grade(len(exercises), correct, difficulty_level)
-    stat = request.user.statistic
-    stat.add_grade(grade, training_mode)
+    if not results_of_test.processed:
+        stat = request.user.statistic
+        stat.add_grade(grade, training_mode)
+        results_of_test.end_of_processing()
     result_data = {'correct': correct, 'wrong': wrong, 'skipped': skipped, 'number': len(exercises), 'grade': grade}
     for exercise in exercises:
         if request.user.is_answered_check(exercise) is None:

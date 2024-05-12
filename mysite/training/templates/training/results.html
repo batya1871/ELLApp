@@ -33,27 +33,36 @@
             </tbody>
         </table>
     </div>
-    <h2>Неправильные ответы:</h2>
+    {% if result_data.correct < result_data.number %}
+    <h2 class="wrong-h2">Неправильные ответы:</h2>
+    {% endif %}
     <div class="wrong-container">
         {% for wrong in wrong_data %}
-            <div class="wrong-answers-css">
-                <div class="answer-set">
+
+            <div class="wrong-answers-css {% if forloop.counter|divisibleby:'2' %} wrong-answers-right {% else %} wrong-answers-left {% endif %}">
+                <div class="answer-set-border-bottom">
+                    <div class="answer-set">
                     {%if training_mode == "translate"%}
                     <span class="text-task-base">Перевести текст:</span>
                     <div class="text-task-css answer-css task-for-wrong"> {{wrong.wrong_exercises.task}}</div>
                     {% else %}
-                    <span class="text-task-base">Прослушать аудио и написать услышанное</span>
+                    <span class="text-task-base">Прослушать аудио и написать услышанное:</span>
                     <audio class="audio-task-css wrong-audio" controls src="{{ wrong.wrong_exercises.audio_task.url }}"></audio>
                     {% endif %}
                 </div>
-                <div class="answer-set">
+                </div>
+                <div class="answer-set-border-bottom">
+                    <div class="answer-set">
                     <span class="text-task-base">Ответ пользователя: </span>
                     <span class="text-task-css answer-css wrong-answer">{{wrong.wrong_answers}}</span>
                 </div>
-                <div class="answer-set">
+                </div>
+               <div class="answer-set">
                     <span class="text-task-base">Правильный ответ: </span>
                     <span class="text-task-css answer-css correct-answer" >{{wrong.correct_answers}}</span>
                 </div>
+
+
             </div>
         {% endfor %}
     </div>

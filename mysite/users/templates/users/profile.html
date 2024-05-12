@@ -1,16 +1,36 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{title}}</h1>
-<form method="post">
-  {% csrf_token %}
-  <div class="form-error">{{ form.non_field_errors }}</div>
-   {% for f in form %}
-   <p><label class="form-label" for="{{f.id_for_label}}">{{f.label}}</label> {{f}}</p>
-   <div class="form-error">{{f.errors}}</div>
-   {% endfor %}
-  <p><button type="submit">Сохранить</button> </p>
-</form>
-<hr>
-<p><a href="{% url 'users:password_change'  %}">Перейти к изменению пароля</a></p>
+
+<div class="form-users-container">
+   <div class="form-users-css">
+      <div class="title-profile">
+          <h1>{{title}}</h1>
+      </div>
+       <div class="inside-profile-container">
+      <form method="post" class="needs-validation form-users-inputs" novalidate>
+         {% csrf_token %}
+         <input type="hidden" name="next" value="{{ next }}"/>
+
+         {% for f in form %}
+
+         <div class="form-obj-set profile-set">
+            <label class="form-label profile-label" for="{{f.id_for_label}}">{{f.label}}: </label>
+            <div class="form-obj-field">{{f}}</div>
+           <div class="form-error">
+               {{f.errors}}
+           </div>
+         </div>
+
+         {% endfor %}
+         <div class="form-error">{{ form.non_field_errors}}</div>
+         <button class="btn-default btn-users" type="submit">Сохранить</button>
+      </form>
+           </div>
+      <div class="form-users-refs ref-position-profile">
+          <a class="ref-btn-users ref-animatic-btn-users" href="{% url 'users:password_change' %}">Перейти к изменению пароля</a>
+      </div>
+   </div>
+</div>
+
 {% endblock %}

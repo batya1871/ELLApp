@@ -96,8 +96,9 @@ img {
 .top-menu li a:hover::after {
     transform: scale(1);
 }
-.nav-my-color {
+.nav-my-settings {
     background-color:#0a408f;
+    height: 10%;
 }
 .navbar-expand-lg .navbar-nav .dropdown-menu{
     right:0;
@@ -109,7 +110,7 @@ img {
 /*Training session*/
 .form-container{
     display: flex;
-    height: 89%;
+    height: 90%;
     width: 100%;
     align-items: center;
     justify-content: space-around;
@@ -184,7 +185,7 @@ table tr {
 .statistic-div{
     height: auto;
     background-color:#c9dfff;
-    height: 89%;
+    height: 90%;
 }
 
 
@@ -194,7 +195,7 @@ table tr {
 /* display exercise */
 .exercise-container{
     display:flex;
-    height:89%;
+    height:90%;
     align-items: center;
     justify-content: center;
 }
@@ -243,7 +244,7 @@ table tr {
     justify-content: space-between;
     margin-top: 10px;
 }
-.btn-exercise{
+.btn-default{
   color: #fff;
   background-color:#0a408f;
   border: none;
@@ -260,7 +261,7 @@ table tr {
   white-space: nowrap;
   transition: all .5s;
 }
-.btn-exercise:hover {
+.btn-default:hover {
   background-color:#1356b8;
 }
 .ref-btn-ex{
@@ -344,6 +345,9 @@ table tr {
     color:#ff3232 !important;
 }
 
+.wrong-h2{
+    padding-left:30px;
+}
 .wrong-container{
 
     display:flex;
@@ -351,22 +355,34 @@ table tr {
     padding-left: 30px;
     padding-right: 30px;
     flex-wrap: wrap;
+    justify-content: space-between;
 
+}
+.answer-set-border-bottom{
+    border-bottom: 1px solid #0a408f;
 }
 .wrong-answers-css{
     background-color: #c9dfff;
-    border: 1px solid #0a408f;
     border-radius: var(--bs-border-radius);
     flex-direction: column;
     display:flex;
     margin-bottom: 10px;
-    margin-right: 6px;
     width: 49%;
 }
+
+.wrong-answers-right{
+    margin-left: 6px;
+}
+.wrong-answers-left{
+    margin-right: 6px;
+}
+
 .answer-set{
-    border-bottom: 1px solid #0a408f;
     display:flex;
     align-items: center;
+    margin-right: 5px;
+    margin-left: 5px;
+    margin-bottom: 5px;
 }
 .answer-css{
     padding-left: 5px;
@@ -385,5 +401,173 @@ table tr {
 .correct-answer{
     background-color:#16e716;
 }
+
+@media only screen and (max-width: 675px) {
+.wrong-answers-css{
+    width: 96%;
+}
+.wrong-answers-right{
+    margin-left: 0px;
+}
+.wrong-answers-left{
+    margin-right: 15px;
+}
+}
 /* Results */
 
+/* USERS */
+.title-profile h1 {
+    text-align: center;
+
+}
+.form-users-container{
+    display:flex;
+    height:90%;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-users-css{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #0a408f;
+    border-radius: var(--bs-border-radius);
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+    padding:15px;
+    min-width: 35%;
+    max-width: 40%;
+    min-height: 40%;
+    background-color:#c9dfff;
+}
+.form-users-inputs{
+    display:flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.form-obj-set{
+    margin-top: 15px;
+}
+.form-users-refs{
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    width:100%;
+    justify-content: space-between;
+}
+.ref-users-left{
+    min-width:40%;
+    margin-right:5px;
+}
+.ref-users-right{
+    min-width:40%;
+    margin-left:5px;
+}
+
+.errorlist
+    {
+    color: var(--bs-form-invalid-color);
+    padding-left: 10px;
+    list-style-type: none;
+    font-size: .875em;
+    margin-bottom:10px
+    }
+.errorlist li {
+    word-break: break-word;
+}
+.ref-btn-users{
+  width:100%;
+  text-decoration: none;
+  border-radius: 25px;
+    transition: all .5s;
+  height: 48px;
+  padding-left: 10px;
+  padding-right: 10px;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--bs-border-radius);
+  white-space: nowrap;
+}
+
+.ref-animatic-btn-users{
+  border: 2px solid #0a408f;
+  color: #0a408f;
+}
+.ref-animatic-btn-users:hover {
+   background-color: #0a408f;
+   color: #fff;
+}
+.btn-users{
+    margin-top: 15px;
+}
+.password-set{
+    margin-top: 15px;
+    display:flex;
+    flex-direction: column;
+}
+.passwords{
+    display:flex;
+}
+.password-new{
+    max-width: 95%;
+    margin-right:10px;
+}
+.password-repeat{
+    max-width: 96%;
+    margin-left: 10px;
+}
+.reg-form-size{
+    max-width: 50%;
+}
+.email-input{
+    flex-wrap: nowrap !important;
+}
+.email-input input{
+
+}
+
+.reset-text{
+    font-weight:bold;
+    font-family: 'Roboto', sans-serif;
+}
+
+.text{
+    display:flex;
+    margin-top: 30px;
+
+}
+
+.profile-set{
+    display:flex;
+    flex-direction:row;
+    align-items: baseline;
+    justify-content: flex-end;
+    width:100%;
+}
+.inside-profile-container{
+    display:flex;
+    justify-content: flex-start;
+}
+.profile-set input{
+    width:100%;
+}
+.profile-label{
+    margin-right: 20px;
+    text-align:center;
+}
+.ref-position-profile{
+    display:flex;
+}
+.inside-password-change-container{
+    display:flex;
+    width: 100%;
+}
+.change-pass-errors ul {
+    margin-bottom: 0;
+}
+.form-email-reset{
+    min-height: 30%;
+}
+/* USERS */

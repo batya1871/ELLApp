@@ -9,6 +9,12 @@ from django.views.generic import CreateView, UpdateView
 
 from .forms import LoginUserForm, RegisterUserForm, ProfileUserForm, UserPasswordChangeForm
 
+menu_list = [
+    {'ref': 'training:training_session', 'content': 'Выбор режима'},
+    {'ref': 'training:statistic', 'content': 'Статистика пользователя'},
+    {'ref': 'training:settings', 'content': 'Настройки'}
+]
+
 
 class LoginUser(LoginView):
     form_class = LoginUserForm
@@ -68,7 +74,8 @@ class ProfileUser(LoginRequiredMixin, UpdateView):
     form_class = ProfileUserForm
     template_name = "users/profile.html"
     extra_context = {
-        'title': 'Изменение данных профиля'
+        'title': 'Изменение профиля',
+        'menu_list': menu_list,
     }
 
     def get_success_url(self):
@@ -82,4 +89,5 @@ class UserPasswordChange(LoginRequiredMixin, PasswordChangeView):
     form_class = UserPasswordChangeForm
     success_url = reverse_lazy("users:password_change_done")
     template_name = "users/password_change_form.html"
-    extra_context = {'title': 'Изменение пароля'}
+    extra_context = {'title': 'Изменение пароля',
+                     'menu_list': menu_list}
