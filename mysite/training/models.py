@@ -1,3 +1,5 @@
+from random import randint
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -127,6 +129,8 @@ class Difficulty_level(models.Model):
 
     def get_first_exercise_block(self):
         return self.exercise_block_set.first()
+    def get_random_exercise_block(self):
+        return self.exercise_block_set.all()[randint(0, self.exercise_block_set.count() - 1)]
 
 
 class Exercise_block(models.Model):

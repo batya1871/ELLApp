@@ -570,4 +570,7 @@ table tr {
 .form-email-reset{
     min-height: 30%;
 }
+.form-pass-change-done-size{
+    min-height: 33%;
+}
 /* USERS */

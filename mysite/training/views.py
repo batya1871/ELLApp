@@ -1,5 +1,3 @@
-from itertools import chain
-from operator import attrgetter
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
@@ -86,7 +84,7 @@ def training_session(request):
 def display_test(request, training_mode, difficulty_level):
     request.user.clean_data()
     difficulty_level_bd = get_object_or_404(Difficulty_level, name=difficulty_level)
-    exercise_block = difficulty_level_bd.exercise_block_set.first()
+    exercise_block = difficulty_level_bd.get_random_exercise_block()
     exercise_block.set_nums()
     if request.user.statistic is None:
         request.user.create_statistic()
