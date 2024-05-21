@@ -25,7 +25,6 @@ value_diff_list = {
 
 def get_grade(count, correct_count, difficulty_level):
     percentage = correct_count / count * 100
-
     grade_thresholds = {
         "easy": [(90, 5, "greate-grade"), (70, 4, "good-grade"), (50, 3, "ok-grade")],
         "medium": [(80, 5, "greate-grade"), (60, 4, "good-grade"), (40, 3, "ok-grade")],
@@ -84,6 +83,7 @@ def training_session(request):
 def display_test(request, training_mode, difficulty_level):
     request.user.clean_data()
     difficulty_level_bd = get_object_or_404(Difficulty_level, name=difficulty_level)
+    difficulty_level_bd.deactivate_all_blocks()
     exercise_block = difficulty_level_bd.get_random_exercise_block()
     exercise_block.set_nums()
     if request.user.statistic is None:
@@ -101,7 +101,7 @@ def display_test(request, training_mode, difficulty_level):
 @login_required
 def display_exercise(request, training_mode, difficulty_level, exercise_num):
     difficulty_level_bd = get_object_or_404(Difficulty_level, name=difficulty_level)
-    exercise_block = difficulty_level_bd.exercise_block_set.first()
+    exercise_block = difficulty_level_bd.exercise_block_set.filter(is_active_block=True)[0]
     exercises = exercise_block.exercise_set.order_by('num')
     current_exercise, next_exercise, prev_exercise = None, None, None
     current_exercise = exercises[exercise_num]
@@ -128,7 +128,7 @@ def display_exercise(request, training_mode, difficulty_level, exercise_num):
 @login_required
 def exercise_grade(request, training_mode, difficulty_level, exercise_num):
     difficulty_level_bd = get_object_or_404(Difficulty_level, name=difficulty_level)
-    exercise_block = difficulty_level_bd.exercise_block_set.first()
+    exercise_block = difficulty_level_bd.exercise_block_set.filter(is_active_block=True)[0]
     exercises = exercise_block.exercise_set.order_by('num')
     exercise = exercises[exercise_num]
     if not request.user.is_answered_check(exercise) and request.method == "POST":
@@ -156,7 +156,6 @@ def exercise_grade(request, training_mode, difficulty_level, exercise_num):
                                              'difficulty_level': difficulty_level,
                                              'exercise_num': exercise_num + 1}))
     else:
-
         skipped_exercises_count = request.user.get_skipped_exercise_count(exercises)
         context = {'training_mode': training_mode,
                    'difficulty_level': difficulty_level,
@@ -171,7 +170,8 @@ def exercise_grade(request, training_mode, difficulty_level, exercise_num):
 @login_required
 def results(request, training_mode, difficulty_level):
     difficulty_level_bd = get_object_or_404(Difficulty_level, name=difficulty_level)
-    exercise_block = difficulty_level_bd.exercise_block_set.first()
+    exercise_block = difficulty_level_bd.exercise_block_set.filter(is_active_block=True)[0]
+    exercise_block.active_off()
     exercises = exercise_block.exercise_set.order_by('num')
     results_of_test = Result.objects.filter(user=request.user,
                                             training_mode=(

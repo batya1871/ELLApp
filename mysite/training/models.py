@@ -40,18 +40,6 @@ class Student(AbstractUser):
         self.save()
 
 
-class Settings(models.Model):
-    user = models.ForeignKey(Student, verbose_name="Пользователь", on_delete=models.CASCADE)
-    settings = models.TextField("Настройки")
-
-    def __str__(self):
-        return self.settings
-
-    class Meta:
-        verbose_name = "Настройки"
-        verbose_name_plural = "Настройки"
-
-
 class Grades(models.Model):
     grade = models.PositiveSmallIntegerField("Оценка")
 
@@ -129,19 +117,35 @@ class Difficulty_level(models.Model):
 
     def get_first_exercise_block(self):
         return self.exercise_block_set.first()
+
+    def deactivate_all_blocks(self):
+        for ex_block in self.exercise_block_set.all():
+            ex_block.active_off()
+
     def get_random_exercise_block(self):
-        return self.exercise_block_set.all()[randint(0, self.exercise_block_set.count() - 1)]
+        ex_block = self.exercise_block_set.all()[randint(0, self.exercise_block_set.count() - 1)]
+        ex_block.active_on()
+        return ex_block
 
 
 class Exercise_block(models.Model):
     name = models.TextField("Название теста", unique=True)
     difficulty_level = models.ForeignKey(Difficulty_level, verbose_name="Уровень сложности", on_delete=models.CASCADE)
+    is_active_block = models.BooleanField("Активный блок", default=False)
 
     def set_nums(self):
         exercises = self.exercise_set.all()
         for ind, exercise in enumerate(exercises):
             exercise.num = ind
             exercise.save()
+
+    def active_on(self):
+        self.is_active_block = True
+        self.save()
+
+    def active_off(self):
+        self.is_active_block = False
+        self.save()
 
     def __str__(self):
         return self.name
@@ -197,5 +201,3 @@ class Result(models.Model):
     def end_of_processing(self):
         self.processed = True
         self.save()
-
-
